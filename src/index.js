@@ -4,7 +4,8 @@ import IndexComponent from './IndexComponent';
 import {ThemeProvider,createMuiTheme} from '@material-ui/core/styles';
 import green from '@material-ui/core/colors/green';
 import blue from '@material-ui/core/colors/blue';
-
+import { BrowserRouter as Router } from 'react-router-dom'
+import { createBrowserHistory } from 'history';
 
 const theme = createMuiTheme({
   palette: {
@@ -17,12 +18,14 @@ const theme = createMuiTheme({
   }
 });
 
-
+const history = createBrowserHistory();
 
 ReactDOM.render(
 
   <ThemeProvider theme={theme}>
-    <IndexComponent />
+    <Router history={history} >
+     <IndexComponent />
+    </Router>
   </ThemeProvider>,
   document.getElementById('root')
 );

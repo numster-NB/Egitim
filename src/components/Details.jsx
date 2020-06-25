@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import { Container,ExpansionPanel,ExpansionPanelSummary,Typography,ExpansionPanelDetails,Button,Paper,Tooltip,CircularProgress } from "@material-ui/core";
+import { Container,ExpansionPanel,ExpansionPanelSummary,Typography,ExpansionPanelDetails,Button,Paper,Tooltip,CircularProgress,TextField } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Alert from '@material-ui/lab/Alert'
 import DeleteIcon from '@material-ui/icons/Delete';
+import axios from 'axios';
 
 const useStyles = theme=>({
     "@global":{
@@ -44,8 +45,8 @@ const useStyles = theme=>({
 
 class Details extends Component {
 
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state={
             alertMes:undefined,
             alertMesErr:undefined,
@@ -53,8 +54,10 @@ class Details extends Component {
             longitude:undefined,
             items:[],
             currentItem:{
+                head:"",
                 text:"",
-                id: ""
+                id: "",
+                itemId:""
             },
             circProg:false
             
@@ -83,36 +86,97 @@ class Details extends Component {
             latitude:position.coords.latitude
         })
     }
-    handleInput = (e)=>{
+
+    handleText=(e)=>{
         this.setState({
             currentItem:{
-                text:e.target.value,
-                id: Date.now()
+                head:e.target.value,
+                text:this.state.currentItem.text,
+                id: this.state.currentItem.id,
+                itemId:this.props.match.params.id
             }
         })
+        const head = this.state.currentItem.head
+        console.log(head)
+    } 
+    handleInput = (e)=>{
+        var header=e.target.parentElement.elements.header.value
+        this.setState({
+            currentItem:{
+
+                head:header,
+                text:e.target.value,
+                id: Date.now(),
+                itemId:this.props.match.params.id
+            }
+        })
+        console.log(this.state.currentItem)
     }
-    addItem = (e)=>{
+    addItem = async (e)=>{
         e.preventDefault();
         const newItem =this.state.currentItem;
 
-        this.setState({
-            items:[...this.state.items, newItem],
-            currentItem:{
-                text:"",
-                id:""
-            }
-        })
+        const response= await axios.post("http://localhost:3004/details",newItem)
 
-    }
-    deleteItem=(id)=>{
+        if(newItem.text===''){
+            alert('Hata')
+        }
+        else if(newItem.head===''){
+            e.target.elements.header.style.backgroundColor='#ff0000';
+        }else{
+            this.setState({
+                items:[...this.state.items, response.data],
+                currentItem:{
+                    head:"",
+                    text:"",    
+                    id:"",
+                    itemId:""
+                }
+            })
+        }
+       
+       
+        
+
+     } 
+     componentDidMount= async () => {
+         const response = await axios.get("http://localhost:3004/details")
+         console.log(response.data)
+         const dataItem= response.data.filter(item=>item.itemId===this.props.match.params.id)
+         console.log(dataItem)
+         this.setState({
+             items:dataItem
+         })
+     }
+     
+      //! Bu şekildede yapabilirsin sadece form submit edildiğinde bana daha pratik geldi.(Bunu yaptığın zaman elementlerin value attributelarını yazmadığına emin ol.)
+        /* addItem=(e)=>{
+            e.preventDefault();
+
+            var item={
+                head:e.target.elements.header.value,
+                text:e.target.elements.detail.value,
+                id:Date.now()
+            }
+            
+            this.setState({
+                items:[...this.state.items,item]
+            })
+            e.target.elements.header.value="";
+            e.target.elements.detail.value="";
+
+        } */
+    
+    deleteItem= async (id)=>{
         const items = this.state.items.filter(item=>item.id!==id);
+        await axios.delete(`http://localhost:3004/details/${id}`)
         this.setState({
             items:items
         })
     }
     render() {
         const {classes}=this.props;
-        console.log(this.props.match.params.id)
+       console.log(this.props.match.params.id)
         return (
             <Container maxWidth="sm" >
             
@@ -120,7 +184,8 @@ class Details extends Component {
 
                    {
                        this.state.items.map((item,index)=>{
-                           console.log(index)
+                           console.log(item.head)
+                           
                            return(
                                
                                <ExpansionPanel  key={item.id} >
@@ -131,7 +196,7 @@ class Details extends Component {
                             id="panel1a-header"
                             >
                             
-                            <Typography> {`Detail ${index+1}`} </Typography>
+                            <Typography> {item.head} </Typography>
                             
                             </ExpansionPanelSummary>
                             
@@ -154,12 +219,29 @@ class Details extends Component {
                    }
                     
                 <form onSubmit={this.addItem} className={classes.form}>
-
+                   <TextField 
+                   color="primary" 
+                   variant="filled" 
+                   name="header" 
+                   style={{backgroundColor:'#fff'}}
+                   placeholder="Detay Başlığını Giriniz.."
+                   margin="normal"
+                   size="small"
+                   onChange={this.handleText}
+                   value={this.state.currentItem.head}
+                   onFocus={(e)=>{e.target.style.backgroundColor="#fff"}}
+                   >
+                   </TextField>
+                   
+                   
                     <textarea
                     onChange={this.handleInput}
-                    value={this.state.currentItem.text}
+                    value={this.state.currentItem.text} //! Bunun mantığı state içerisinde bunun değeri bulunur.Biz bir eleman eklediğimiz zaten state içerisinde text değerini boş olarak güncelliyoruz ve burasıda tekrar boş oluyor.
                     style={{minWidth:'80%', minHeight:'100px'}} 
                     placeholder="Detay Ekleyin.."
+                    name="detail"
+                    onFocus={(e)=>{e.target.style.backgroundColor="#fff"}}
+
                     >
                     </textarea>
                     <Button type="submit"  variant="contained" color="primary">Detay Ekle</Button>

@@ -203,7 +203,7 @@ const useStyles = theme =>({
                               closePopup={this.togglePopup}  
                     />   
                     }
-                    { loading && <Spinner  /> }
+                    { loading && <Spinner thickness="2.6" size="12rem"  /> }
             </Container>
             
             

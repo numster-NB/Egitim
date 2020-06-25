@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { TextField,Button,List,ListItem,ListItemText,IconButton,Tooltip,Paper} from '@material-ui/core'
+import { TextField,Button,List,ListItem,ListItemText,IconButton,Tooltip,Paper,Divider} from '@material-ui/core'
 import {withStyles} from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
 import axios from "axios";
 import {Link} from 'react-router-dom';
-
-
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 
 const useStyles=(theme=>({
     root:{
@@ -138,22 +138,37 @@ class TodoComponent extends Component {
                          <List>
                          {this.state.items.map(item=>{
                      return(
+                        <div>
                          <ListItem key={item.id}>
-                             
+                         
                              <ListItemText
                              
                              primary={item.text} />
+                             
+
                                  
-                                 <Button component={Link} target="_blank" to={`/details/${item.id}`} size="small" color="primary" variant="outlined">Details</Button>
+                                 <Tooltip title="Details">
+                                 <IconButton component={Link} target="_blank" to={`/details/${item.id}`}>
+                                      <AssignmentIcon color="primary" />
+                                 </IconButton>
+                                 </Tooltip>
+                                 <Tooltip title="Show Profiles">
+                                    <IconButton component={Link} target="_blank" to={"/profiles"} >
+                                        <AssignmentIndIcon color="primary" />
+                                    </IconButton>
+                                 </Tooltip>
                                  <Tooltip title="Delete">
                                      <IconButton onClick={()=> this.deleteItem(item.id)}  className={classes.dlt}>
                                          <DeleteIcon  />
                                      </IconButton>
                                  </Tooltip>
-                                  
+                                 
                          </ListItem>
+                         <Divider />
+                         </div>
                      )
                  })}
+                 
              </List>
                     
                     

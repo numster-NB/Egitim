@@ -11,6 +11,30 @@
     {
       "text": "yeni ",
       "id": 1590235012284
+    },
+    {
+      "text": "Eve git",
+      "id": 1591355883089
+    }
+  ],
+  "details": [
+    {
+      "head": "Camsil al",
+      "text": "5 lt cam sil al.",
+      "id": 1592320930805,
+      "itemId": "1590148689010"
+    },
+    {
+      "head": "Silecekleri değiştir",
+      "text": "Silecekler artık eskidi yenisini al.",
+      "id": 1592321700647,
+      "itemId": "1590149998330"
+    },
+    {
+      "head": "Arabanın yıllık bakımı",
+      "text": "Arabanın yıllık bakımını yap.",
+      "id": 1592321981179,
+      "itemId": "1590149998330"
     }
   ]
 }
